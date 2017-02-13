@@ -1,0 +1,64 @@
+{
+ "_blog_json": {
+  "dir": "blog/.",
+  "posts_per_page": 5
+ },
+ "_blog_page_body": "<div class=\"nav\">You are reading: <span>Fun64 dev blog</span></div><div class=\"nav\"><a href=\"{_root}\" class=\"bar\">Home</a></div>\n\n{_list:blog_list}\n\n<div>{_blog_page_older:link_older_page} {_blog_page_newer:link_newer_page}</div>\n",
+ "_blog_post_body": "<h2 id=\"-_blog_post_json-title-\">{_blog_post_json.title}</h2>\n<p>Apparently if your hello world example is longer than a couple of lines \nthen you are open to ridicule.</p>\n<p>I suspect people who say this are blissfully unaware exactly what _main \ngets up to before your code runs and lets not even think about C++.</p>\n<p>Still it helps to remove as much gubbins as possible so the code that&#39;s \nrunning becomes obvious. Fun64 is built around the idea that you should \ndefine the hardware before the program runs so lets hide all that away \ninside a builtin function that will set you up a basic looking screen \nto work with.</p>\n<p>Introducing the configurator, this function will provide various setups \ndepending on the mode requested and also provide a main function that \nwill allow you to provide a single update function rather than dealing \nwith more complexities. A single update function is less optimal but a \nperfectly reasonable way to write short bits of test code.</p>\n<p>So far the only mode we have is &quot;fun64&quot; which will get you a 60fps \n320x240 screen with three layers and the Swanky32 palette. The three \nlayers gives us a copper background, a tile+sprite foreground and \nfinally a text overlay on the very top. For graphical memory we have a \n64x64 area of 8x8 tiles (4096 in total) and we auto upload the 4x8 \nfun64 font to the very first line for use by the text layer.</p>\n<p>NB: If you clobber this top line all your text will go funny, just like \non real hardware.</p>\n<p>The main point of the layers is so we can have drop shadows between \nthem, the text layer on top gives us some very cheap 80s looking text \nmenus when used with solid blocks of background color.</p>\n",
+ "_blog_post_body_many": "<div class=\"blog_wrap\">\n\t<div class=\"blog_info\"><a href=\"{_dirname}\">{_blog_post_json.title}</a> by {_blog_post_json.author} on {_blog_post_json.datedash}</div>\n\t{_blog_post_body}\n\t{_blog_post_json.fun_file&fun_blog_link}\n</div>\n",
+ "_blog_post_body_one": "<div class=\"nav\">You are reading: <a href=\"{_root}blog\">Fun64 dev blog</a></div><div class=\"nav\"><a href=\"{_root}\" class=\"bar\">Home</a></div>\n<div class=\"blog_wrap\">{_blog_post_body}</div>\n\n{_blog_post_json.fun_file&fun_blog_embed}\n\n<div>{_blog_post_older:link_older_post} {_blog_post_newer:link_newer_post}</div>\n\nSome comments belong here\n",
+ "_blog_post_json": {
+  "author": "xriss",
+  "datedash": "2017-02-12",
+  "datetime": [
+   2017,
+   2,
+   12,
+   0,
+   0,
+   0
+  ],
+  "fun_file": "helloworld.fun.lua",
+  "fun_height": "512px",
+  "title": "Hello World!",
+  "unixtime": 1486857600
+ },
+ "_blog_post_older": "/fun64/blog/2017-01-27-comic-test/",
+ "_dirname": "/fun64/blog/2017-02-12-hello-world",
+ "_filename": "/fun64/blog/2017-02-12-hello-world/index.html",
+ "_flags": {
+  "_blog_post_body": {
+   "form": "markdown"
+  },
+  "body": {
+   "trim": "ends"
+  },
+  "css": {
+   "same": "append"
+  },
+  "head": {
+   "trim": "ends"
+  },
+  "html": {
+   "trim": "ends"
+  },
+  "title": {
+   "trim": "ends"
+  }
+ },
+ "_root": "/fun64/",
+ "_sourcename": "blog/2017-02-12-hello-world/index.html",
+ "blog_list": "{_it._body}\n\n",
+ "body": "{_blog_post_body_one}",
+ "css": "\n*\t\t{box-sizing:border-box;}\nbody\t{background:#f7f4fd; font-family:mono, sans-serif; font-size:16px; line-height:24px; color:#3a3a3a; width:100%; padding:50px; margin:0px auto;}\nh1\t\t{font-size:4em; font-weight:normal; color:#1400ff;}\nh2\t\t{font-size:2em; font-weight:normal;}\n\na\t\t{color:#1400ff;}\n\na.bar\t{color:#f7f4fd; background-color:#3a3a3a; border-radius:4px; padding:5px; text-decoration:none; border-bottom:none;}\na.bar:hover\t{background-color:#1400ff; border-bottom:none;}\n\n\n.nav\t{display:inline-block; vertical-align:top; width:50%;}\n.nav:nth-of-type(2)\t{text-align:right;}\n\n.line, .blog_wrap\t{border-top:1px dashed #1400ff; margin-top:40px; margin-bottom:40px; position:relative;}\n.blog_info\t{position:absolute; right:10px; top:10px;}\n",
+ "fun_blog_code": "<pre id=\"code{_dirname}\"class=\"lang-lua\" style=\"height:512px;overflow:scroll;padding:16px;\"></pre>\n<script>\n\t$.get(\"{_dirname}/{_blog_post_json.fun_file}\", function(data){\n\t\t$(\"[id=\\\"code{_dirname}\\\"]\").text(data).addClass(\"prettyprint\");\n\t\tPR.prettyPrint();\n\t});\n</script>\n",
+ "fun_blog_embed": "\nCheckout the <a href=\"{_dirname}/{_blog_post_json.fun_file}\">lua source file</a> or view the result <a href=\"{_root}run/?url={_dirname}/{_blog_post_json.fun_file}\">fullscreen</a>.\n{fun_blog_code}\n\n<div style=\"width:100%;height:{_blog_post_json.fun_height};overflow:hidden;\"><div style=\"width:100%;height:{_blog_post_json.fun_height};position:relative;\">\n\t\n<script id=\"gamecake_init_lua\" type=\"text/lua\" >--<![CDATA[\n\n\tlocal hx,hy,ss=128,128,3\n\n\tlocal opts={\n\t\ttimes=true, -- request simple time keeping samples\n\n\t\twidth=hx*ss,\t-- display basics\n\t\theight=hy*ss,\n\t\tscreen_scale=ss,\n\t--\tshow=\"full\",\n\t\ttitle=\"fun\",\n\t\tstart=\"wetgenes.gamecake.fun.main\",\n\t\tfun=\"start\",\n\t\tfps=60,\n\t\t... -- include commandline opts\n\t}\n\n\tmath.randomseed( os.time() ) -- try and randomise a little bit better\n\n\toven=require(\"wetgenes.gamecake.oven\").bake(opts).preheat()\n\n\treturn oven:serv()\n\n--]]></script>\n\n\n<div id=\"gamecake_container\" style=\" width:100%; height:100%; position:absolute; \">\n\t<canvas id=\"gamecake_canvas\" style=\" width:100%; height:100%; position:absolute; \" oncontextmenu=\"event.preventDefault()\"></canvas>\n\t<script type=\"text/javascript\">\n\t\t\n\t\tvar gamecake_post;\n\t\tvar Module;\n\t\t\n\t\tvar resize=function(){\n\t\t\tvar e=document.getElementById(\"gamecake_container\");\n\t\t\tvar w=parseFloat(window.getComputedStyle(e).width);\n\t\t\tvar h=parseFloat(window.getComputedStyle(e).height);\n\t\t\tModule.setCanvasSize(w,h);\n\t\t\tif(gamecake_post)\n\t\t\t{\n\t\t\t\tgamecake_post('cmd=lua\\n','require(\"wetgenes.win\").hardcore.resize(nil,'+w+','+h+')');\n\t\t\t}\n\t\t};\n\n\t\tvar gamecake_start=function() {\n\n//initialise lua\n\t\t\tgamecake_post('cmd=lua\\n','require(\"wetgenes.win\").emcc_start({})');\n\n// create a pulse function and call it every frame\n\t\t\tvar pulse;\n\t\t\tvar resize_wait=16;\n\t\t\tpulse=function() {\n\t\t\t\trequestAnimationFrame(pulse); // we need to always ask to be called again\n\t\t\t\tgamecake_post('cmd=lua\\n','return gamecake_pulse()');\n\t\t\t\tif(resize_wait>0)\n\t\t\t\t{\n\t\t\t\t\tif(--resize_wait==0)\n\t\t\t\t\t{\n\t\t\t\t\t\tconsole.log(\"resioz\");\n\t\t\t\t\t\tresize();\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t};\n\t\t\trequestAnimationFrame(pulse); // start the updates\n\t\t}\n\n\t\tvar show_progress=function(n)\n\t\t{\n\t\t\twindow.show_progress_max=window.show_progress_max || 0;\n\t\t\tif(window.show_progress_max<n) { window.show_progress_max=n; }\n\t\t\tvar pct=Math.floor(100*(1-(n/window.show_progress_max)));\n\t\t\tconsole.log(\"GameCake Loading \"+pct+\"%\");\n\t\t};\n\t\twindow.addEventListener(\"resize\",resize);\n\t\tModule={};\n\t\tModule.canvas=document.getElementById(\"gamecake_canvas\");\n\t\tModule.canvas_resize=resize;\n\t\tModule.memoryInitializerPrefixURL=\"{_root}exe/\";\n\t\tModule['_main'] = function() {\n\t\t\tgamecake_post = Module.cwrap('main_post', 'int', ['string','string']);\n\t\t\tgamecake_start();\n\t\t\tresize();\n\t\t};\n\t\tModule[\"preInit\"] = function() {\n\t\t\tFS.mkdir(\"/lua\");\n\t\t\tFS.createPreloadedFile('/', \"start.fun.lua\", \"{_dirname}/{_blog_post_json.fun_file}\", true, false);\n\t\t\tFS.writeFile( \"/lua/init.lua\" , document.getElementById(\"gamecake_init_lua\").innerHTML );\n\t\t};\n\t\tModule[\"monitorRunDependencies\"]=show_progress;\n\n\n\t</script>\n\t<script type=\"text/javascript\" src=\"{_root}exe/gamecake.js\"></script>\n</div>\n</div></div>\n",
+ "fun_blog_link": "\nCheckout the Fun64 <a href=\"{_dirname}/{_blog_post_json.fun_file}\">lua source file</a> or view the result <a href=\"{_root}run/?url={_dirname}/{_blog_post_json.fun_file}\">fullscreen</a>.\n{fun_blog_code}\n",
+ "head": "<title>{title}</title>\n<style>\n{css}\n</style>\n<script\tsrc=\"{_root}js/jquery-3.1.1.min.js\" ></script>\n<script\tsrc=\"{_root}js/google-code-prettify/prettify.js\" ></script>\n<script\tsrc=\"{_root}js/google-code-prettify/lang-lua.js\" ></script>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"{_root}js/google-code-prettify/skins/sons-of-obsidian.css\" />",
+ "html": "<html>\n<head>{head}</head>\n<body>{body}</body>\n</html>",
+ "link_newer_page": "<a href=\"{_it}\">Newer posts</a>\n\n",
+ "link_newer_post": "<a href=\"{_it}\">Newer post</a>\n\n",
+ "link_older_page": "<a href=\"{_it}\">Older posts</a>\n",
+ "link_older_post": "<a href=\"{_it}\">Older post</a>\n",
+ "title": "{_blog_post_json.title}"
+}

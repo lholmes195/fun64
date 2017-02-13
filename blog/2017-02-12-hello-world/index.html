@@ -1,0 +1,173 @@
+<html>
+<head><title>Hello World!</title>
+<style>
+
+*		{box-sizing:border-box;}
+body	{background:#f7f4fd; font-family:mono, sans-serif; font-size:16px; line-height:24px; color:#3a3a3a; width:100%; padding:50px; margin:0px auto;}
+h1		{font-size:4em; font-weight:normal; color:#1400ff;}
+h2		{font-size:2em; font-weight:normal;}
+
+a		{color:#1400ff;}
+
+a.bar	{color:#f7f4fd; background-color:#3a3a3a; border-radius:4px; padding:5px; text-decoration:none; border-bottom:none;}
+a.bar:hover	{background-color:#1400ff; border-bottom:none;}
+
+
+.nav	{display:inline-block; vertical-align:top; width:50%;}
+.nav:nth-of-type(2)	{text-align:right;}
+
+.line, .blog_wrap	{border-top:1px dashed #1400ff; margin-top:40px; margin-bottom:40px; position:relative;}
+.blog_info	{position:absolute; right:10px; top:10px;}
+
+</style>
+<script	src="/fun64/js/jquery-3.1.1.min.js" ></script>
+<script	src="/fun64/js/google-code-prettify/prettify.js" ></script>
+<script	src="/fun64/js/google-code-prettify/lang-lua.js" ></script>
+<link rel="stylesheet" type="text/css" href="/fun64/js/google-code-prettify/skins/sons-of-obsidian.css" /></head>
+<body><div class="nav">You are reading: <a href="/fun64/blog">Fun64 dev blog</a></div><div class="nav"><a href="/fun64/" class="bar">Home</a></div>
+<div class="blog_wrap"><h2 id="-_blog_post_json-title-">Hello World!</h2>
+<p>Apparently if your hello world example is longer than a couple of lines 
+then you are open to ridicule.</p>
+<p>I suspect people who say this are blissfully unaware exactly what _main 
+gets up to before your code runs and lets not even think about C++.</p>
+<p>Still it helps to remove as much gubbins as possible so the code that&#39;s 
+running becomes obvious. Fun64 is built around the idea that you should 
+define the hardware before the program runs so lets hide all that away 
+inside a builtin function that will set you up a basic looking screen 
+to work with.</p>
+<p>Introducing the configurator, this function will provide various setups 
+depending on the mode requested and also provide a main function that 
+will allow you to provide a single update function rather than dealing 
+with more complexities. A single update function is less optimal but a 
+perfectly reasonable way to write short bits of test code.</p>
+<p>So far the only mode we have is &quot;fun64&quot; which will get you a 60fps 
+320x240 screen with three layers and the Swanky32 palette. The three 
+layers gives us a copper background, a tile+sprite foreground and 
+finally a text overlay on the very top. For graphical memory we have a 
+64x64 area of 8x8 tiles (4096 in total) and we auto upload the 4x8 
+fun64 font to the very first line for use by the text layer.</p>
+<p>NB: If you clobber this top line all your text will go funny, just like 
+on real hardware.</p>
+<p>The main point of the layers is so we can have drop shadows between 
+them, the text layer on top gives us some very cheap 80s looking text 
+menus when used with solid blocks of background color.</p>
+</div>
+
+
+Checkout the <a href="/fun64/blog/2017-02-12-hello-world/helloworld.fun.lua">lua source file</a> or view the result <a href="/fun64/run/?url=/fun64/blog/2017-02-12-hello-world/helloworld.fun.lua">fullscreen</a>.
+<pre id="code/fun64/blog/2017-02-12-hello-world"class="lang-lua" style="height:512px;overflow:scroll;padding:16px;"></pre>
+<script>
+	$.get("/fun64/blog/2017-02-12-hello-world/helloworld.fun.lua", function(data){
+		$("[id=\"code/fun64/blog/2017-02-12-hello-world\"]").text(data).addClass("prettyprint");
+		PR.prettyPrint();
+	});
+</script>
+
+
+<div style="width:100%;height:512px;overflow:hidden;"><div style="width:100%;height:512px;position:relative;">
+	
+<script id="gamecake_init_lua" type="text/lua" >--<![CDATA[
+
+	local hx,hy,ss=128,128,3
+
+	local opts={
+		times=true, -- request simple time keeping samples
+
+		width=hx*ss,	-- display basics
+		height=hy*ss,
+		screen_scale=ss,
+	--	show="full",
+		title="fun",
+		start="wetgenes.gamecake.fun.main",
+		fun="start",
+		fps=60,
+		... -- include commandline opts
+	}
+
+	math.randomseed( os.time() ) -- try and randomise a little bit better
+
+	oven=require("wetgenes.gamecake.oven").bake(opts).preheat()
+
+	return oven:serv()
+
+--]]></script>
+
+
+<div id="gamecake_container" style=" width:100%; height:100%; position:absolute; ">
+	<canvas id="gamecake_canvas" style=" width:100%; height:100%; position:absolute; " oncontextmenu="event.preventDefault()"></canvas>
+	<script type="text/javascript">
+		
+		var gamecake_post;
+		var Module;
+		
+		var resize=function(){
+			var e=document.getElementById("gamecake_container");
+			var w=parseFloat(window.getComputedStyle(e).width);
+			var h=parseFloat(window.getComputedStyle(e).height);
+			Module.setCanvasSize(w,h);
+			if(gamecake_post)
+			{
+				gamecake_post('cmd=lua\n','require("wetgenes.win").hardcore.resize(nil,'+w+','+h+')');
+			}
+		};
+
+		var gamecake_start=function() {
+
+//initialise lua
+			gamecake_post('cmd=lua\n','require("wetgenes.win").emcc_start({})');
+
+// create a pulse function and call it every frame
+			var pulse;
+			var resize_wait=16;
+			pulse=function() {
+				requestAnimationFrame(pulse); // we need to always ask to be called again
+				gamecake_post('cmd=lua\n','return gamecake_pulse()');
+				if(resize_wait>0)
+				{
+					if(--resize_wait==0)
+					{
+						console.log("resioz");
+						resize();
+					}
+				}
+			};
+			requestAnimationFrame(pulse); // start the updates
+		}
+
+		var show_progress=function(n)
+		{
+			window.show_progress_max=window.show_progress_max || 0;
+			if(window.show_progress_max<n) { window.show_progress_max=n; }
+			var pct=Math.floor(100*(1-(n/window.show_progress_max)));
+			console.log("GameCake Loading "+pct+"%");
+		};
+		window.addEventListener("resize",resize);
+		Module={};
+		Module.canvas=document.getElementById("gamecake_canvas");
+		Module.canvas_resize=resize;
+		Module.memoryInitializerPrefixURL="/fun64/exe/";
+		Module['_main'] = function() {
+			gamecake_post = Module.cwrap('main_post', 'int', ['string','string']);
+			gamecake_start();
+			resize();
+		};
+		Module["preInit"] = function() {
+			FS.mkdir("/lua");
+			FS.createPreloadedFile('/', "start.fun.lua", "/fun64/blog/2017-02-12-hello-world/helloworld.fun.lua", true, false);
+			FS.writeFile( "/lua/init.lua" , document.getElementById("gamecake_init_lua").innerHTML );
+		};
+		Module["monitorRunDependencies"]=show_progress;
+
+
+	</script>
+	<script type="text/javascript" src="/fun64/exe/gamecake.js"></script>
+</div>
+</div></div>
+
+
+<div><a href="/fun64/blog/2017-01-27-comic-test/">Older post</a>
+ </div>
+
+Some comments belong here
+</body>
+</html>
